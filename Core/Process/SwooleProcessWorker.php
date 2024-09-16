@@ -1,7 +1,8 @@
 <?php
 
-namespace Process;
+namespace Core\Process;
 
+use Core\Pipeline\Pipeline;
 use  Swoole\Process;
 
 class SwooleProcessWorker extends SwooleProcess
@@ -25,9 +26,10 @@ class SwooleProcessWorker extends SwooleProcess
      */
     private $name;
 
-    private $hook;
+    private $pipeline;
 
-    public function __construct($hook, $index = 0)
+
+    public function __construct($hook, $index = 0, $pipeline = [])
     {
         $this->hook = $hook;
         $this->worker = new Process([$this, "init"]);
@@ -35,6 +37,7 @@ class SwooleProcessWorker extends SwooleProcess
             'enable_coroutine' => false
         ]);
         $this->worker->index = $index;
+        $this->pipeline = $pipeline;
     }
 
     /**
@@ -58,9 +61,6 @@ class SwooleProcessWorker extends SwooleProcess
     public function output($pid)
     {
         $socket = $this->worker->exportSocket();
-        while (SwooleProcessManager::getSyncPrimitive()->get()) {
-            $data = $socket->recv();
-        }
     }
 
     /**
@@ -72,9 +72,14 @@ class SwooleProcessWorker extends SwooleProcess
         if ($this->name) {
             swoole_set_process_name($this->name . "-worker");
         }
-        if ($this->hook) {
-            call_user_func_array($this->hook, [$process]);
+        $pipeline = new Pipeline($this->pipeline);
+
+        $pipeline->run();
+
+        while (SwooleProcessManager::getSyncPrimitive()->get()) {
         }
+
+        $pipeline->stop();
     }
 
     /**

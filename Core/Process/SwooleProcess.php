@@ -1,5 +1,5 @@
 <?php
-namespace Process;
+namespace Core\Process;
 
 abstract class SwooleProcess
 {

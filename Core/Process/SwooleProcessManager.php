@@ -4,7 +4,7 @@
  * 进程管理
  */
 
-namespace Process;
+namespace Core\Process;
 
 use Hamcrest\Type\IsCallable;
 use Swoole\Process;
@@ -193,7 +193,8 @@ class SwooleProcessManager
 
         //启动工作进程
         for ($count = 0; $count < $this->workerNumber; $count++) {
-            $worker = new SwooleProcessWorker($this->onWorker, $count);
+            $pipeline = $this->config["pipeline"];
+            $worker = new SwooleProcessWorker($this->onWorker, $count, $pipeline);
             if (isset($this->config["service_name"])) {
                 $worker->setName($this->config["service_name"]);
             }
@@ -204,7 +205,8 @@ class SwooleProcessManager
         //启动添加的进程
         $count = 0;
         foreach ($this->addProcess as $name => $hook) {
-            $worker = new SwooleProcessWorker($hook, $count);
+            $pipeline = $this->config["pipeline"];
+            $worker = new SwooleProcessWorker($hook, $count, $pipeline);
             if (isset($this->config["service_name"])) {
                 $worker->setName($name);
             }

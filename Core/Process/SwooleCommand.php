@@ -3,9 +3,9 @@
 /**
  * 命令管理
  */
-namespace Process;
+namespace Core\Process;
 
-use Api\Command;
+use Core\Api\Command;
 
 class SwooleCommand implements Command
 {
