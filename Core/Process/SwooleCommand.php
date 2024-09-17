@@ -25,10 +25,10 @@ class SwooleCommand implements Command
         global $argv;
 
         //解析命令行
-        if (!isset($argv[2])) {
+        if (!isset($argv[1])) {
             $command = "start";
         } else {
-            $command = $argv[2];
+            $command = $argv[1];
         }
 
         if (!$this->startCallable) {

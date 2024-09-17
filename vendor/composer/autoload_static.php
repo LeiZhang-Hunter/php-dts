@@ -15,6 +15,14 @@ class ComposerStaticInit341773eef188e89a64acaca514b8a31d
         array (
             'Socket\\Raw\\' => 11,
         ),
+        'P' => 
+        array (
+            'Psr\\Log\\' => 8,
+        ),
+        'M' => 
+        array (
+            'Monolog\\' => 8,
+        ),
         'G' => 
         array (
             'Google\\Protobuf\\' => 16,
@@ -35,6 +43,14 @@ class ComposerStaticInit341773eef188e89a64acaca514b8a31d
         'Socket\\Raw\\' => 
         array (
             0 => __DIR__ . '/..' . '/clue/socket-raw/src',
+        ),
+        'Psr\\Log\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/log/Psr/Log',
+        ),
+        'Monolog\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/monolog/monolog/src/Monolog',
         ),
         'Google\\Protobuf\\' => 
         array (

@@ -10,6 +10,8 @@ class Config {
 
     private $worker_num = 1;
 
+    public $reload_time = 5000;
+
     private $pipeline = [
         "source" => [
             [
@@ -26,10 +28,15 @@ class Config {
                 ]
             ],
         ],
-        "intercept" => [],
+        "intercept" => [
+
+        ],
         "sink" => [
-            "handle" => PrintOut::class
-        ]
+            "parallelism" => 3,
+            "handle" => PrintOut::class,
+            "config" => []
+        ],
+        "retry" => true,
     ];
 
     public function getConfig() {
@@ -37,7 +44,8 @@ class Config {
             "pid_file" => $this->pid_file,
             "service_name" => $this->service_name,
             "worker_num" => $this->worker_num,
-            "pipeline" => $this->pipeline
+            "pipeline" => $this->pipeline,
+            "reload_time" => $this->reload_time
         ];
     }
 }

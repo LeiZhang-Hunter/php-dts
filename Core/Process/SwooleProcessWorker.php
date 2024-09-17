@@ -2,6 +2,7 @@
 
 namespace Core\Process;
 
+use Core\Log\Logger;
 use Core\Pipeline\Pipeline;
 use  Swoole\Process;
 
@@ -72,14 +73,23 @@ class SwooleProcessWorker extends SwooleProcess
         if ($this->name) {
             swoole_set_process_name($this->name . "-worker");
         }
+        \Swoole\Runtime::enableCoroutine( SWOOLE_HOOK_TCP);
+        swoole_async_set([
+            'enable_coroutine' => true
+        ]);
         $pipeline = new Pipeline($this->pipeline);
 
         $pipeline->run();
 
-        while (SwooleProcessManager::getSyncPrimitive()->get()) {
-        }
 
-        $pipeline->stop();
+//        $pipeline->stop();
+        \Swoole\Process::signal(SIGTERM, function () use ($pipeline) {
+            Logger::getLogger()->info("php-dts begin stop");
+            $pipeline->stop();
+            Logger::getLogger()->info("php-dts has stop");
+        });
+
+        Logger::getLogger()->info("php-dts has finish");
     }
 
     /**

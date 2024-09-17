@@ -2,13 +2,13 @@
 
 namespace Core\Channel;
 
-use Core\Api\Component;
 use Core\Api\Context;
+use Core\Event\Batch;
 use Swoole\Coroutine\Channel;
 use Swoole\Coroutine;
 use Swoole\Coroutine\WaitGroup;
 
-class Queue implements Component {
+class Queue implements \Core\Api\Queue {
 
 
     private $in;
@@ -16,9 +16,10 @@ class Queue implements Component {
     private $wg;
 
     public function __construct() {
-        $this->in = new Channel(16);
+        $this->in = new Channel(1);
         $this->wg = new WaitGroup();
     }
+
 
     public function Type() {
 
@@ -43,31 +44,19 @@ class Queue implements Component {
 
     public function start()
     {
-        $this->wg->add();
-        // TODO: Implement init() method.
-        Coroutine::create(function () {
-            $this->worker();
-            $this->wg->done();
-        });
+
     }
 
     public function stop() {
-        $this->in->close();
-        $this->wg->wait();
+        $ret = $this->in->close();
     }
 
-    private function worker() {
-        while(1) {
-            $data = $this->in->pop(2.0);
-            if ($data) {
-                var_dump($data);
-            } else {
-                if ($this->in->errCode === SWOOLE_CHANNEL_TIMEOUT) {
+    public function in(Batch& $event)
+    {
+        $this->in->push($event);
+    }
 
-                } else {
-                    break;
-                }
-            }
-        }
+    public function out() {
+        return $this->in->pop();
     }
 }

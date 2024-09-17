@@ -289,8 +289,11 @@ class SwooleProcessManager
      */
     public function stopProcessPool()
     {
-        $this->isReload = self::CLOSE_OVERLOAD;
         self::$syncPrimitive->set(self::STOP_PROCESS_POOL);
+        $this->isReload = self::CLOSE_OVERLOAD;
+        foreach (self::$processPool as $pid => $value) {
+            $this->signal($pid, SIGTERM);
+        }
     }
 
     /**
@@ -302,6 +305,9 @@ class SwooleProcessManager
         $this->isReload = self::OPEN_OVERLOAD;
         //关闭子进程
         self::$syncPrimitive->set(self::STOP_PROCESS_POOL);
+        foreach (self::$processPool as $pid => $value) {
+            $this->signal($pid, SIGTERM);
+        }
     }
 
     /**
@@ -405,6 +411,8 @@ class SwooleProcessManager
 
     /**
      * 管理进程池
+     * @param  Config\Config $configObject
+     * @return void
      */
     public function manager($configObject)
     {
@@ -422,10 +430,28 @@ class SwooleProcessManager
         //安装信号处理器
         $this->installSignalHandle();
 
+        // 安装定时器
+//        \Swoole\Timer::tick(1000, function() {
+//            var_dump("11");
+//        });
+
         //区分Swoole的版本，高版本不在隐式监听事件循环
         if (version_compare(swoole_version(), "4.4.0", ">")) {
-            Timer::tick(2000, function () {
-            });
+            if ($configObject->reload_time > 0) {
+                Timer::tick($configObject->reload_time, function () {
+                    $this->reloadProcessPool();
+                });
+            } else {
+                Timer::tick(2000, function () {
+                });
+            }
+
+        } else {
+            if ($configObject->reload_time > 0) {
+                Timer::tick($configObject->reload_time, function () {
+                    $this->reloadProcessPool();
+                });
+            }
         }
 
         Event::wait();

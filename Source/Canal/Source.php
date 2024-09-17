@@ -11,6 +11,8 @@ class Source implements \Core\Api\Source {
 
     private $config;
 
+    private $productFun;
+
     public function __construct() {
         $this->config = new Config();
     }
@@ -27,9 +29,11 @@ class Source implements \Core\Api\Source {
 
     public function Start()
     {
+
         foreach ($this->readers as $key => $v) {
-            $v->run();
+            $v->start($this->productFun);
         }
+
     }
 
     public function Stop()
@@ -38,5 +42,10 @@ class Source implements \Core\Api\Source {
         foreach ($this->readers as $key => $v) {
             $v->stop();
         }
+    }
+
+    public function ProductLoop($productFunc)
+    {
+        $this->productFun = $productFunc;
     }
 }

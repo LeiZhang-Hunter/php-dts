@@ -1,5 +1,6 @@
 {
     "require": {
-        "xingwenge/canal_php": "^1.0"
+        "xingwenge/canal_php": "^1.0",
+        "monolog/monolog": "^2.9"
     }
 }
