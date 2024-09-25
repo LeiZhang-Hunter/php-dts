@@ -10,7 +10,7 @@ class Config {
 
     private $worker_num = 1;
 
-    public $reload_time = 5000;
+    public $reload_time = 0;
 
     private $pipeline = [
         "source" => [
@@ -23,7 +23,7 @@ class Config {
                     "destination" => "example",
                     "filter" => ".*\\..*",
                     "reader" => [
-                        "worker_count" => 1,
+                        "worker_count" => 10,
                     ]
                 ]
             ],
